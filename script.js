@@ -1,17 +1,27 @@
-// NAVIGATION
+/**
+ * IL SENTIERO DEL DHARMA - LOGICA APPLICATIVA
+ */
+
+// --- NAVIGAZIONE ---
 function showSection(sectionId) {
+    // Nascondi tutte le sezioni
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
     
+    // Mostra la sezione target
+    const target = document.getElementById(sectionId);
+    if (target) target.classList.add('active');
+    
+    // Aggiorna i bottoni della navbar
     document.querySelectorAll('.nav-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.sec === sectionId);
     });
     
+    // Cambia attributo nel body per CSS dinamico
     document.body.dataset.section = sectionId;
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// PROGRESS TRACKING
+// --- GESTIONE PROGRESSI ---
 let completedModules = JSON.parse(localStorage.getItem('dharmaProgress')) || [];
 
 function toggleModule(modId) {
@@ -29,73 +39,102 @@ function saveProgress() {
 }
 
 function updateUI() {
-    const totalModules = document.querySelectorAll('.module-card').length;
+    // Calcola percentuale (basata sui 2 moduli attuali)
+    const totalModules = 2; 
     const percent = Math.round((completedModules.length / totalModules) * 100) || 0;
     
-    document.getElementById('totalProgress').innerText = percent + '%';
-    document.getElementById('progressText').innerText = percent + '%';
-    document.getElementById('progressFill').style.width = percent + '%';
+    // Aggiorna barre e testi progresso
+    const progressText = document.getElementById('progressText');
+    const progressFill = document.getElementById('progressFill');
+    if (progressText) progressText.innerText = percent + '%';
+    if (progressFill) progressFill.style.width = percent + '%';
     
+    // Aggiorna lo stato visivo delle card
     document.querySelectorAll('.module-card').forEach(card => {
-        const modId = card.dataset.module;
-        const isDone = completedModules.includes(modId);
-        card.style.opacity = isDone ? '0.7' : '1';
-        card.querySelector('input').checked = isDone;
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            // Estrae l'ID dal richiamo onchange (es. '1.1')
+            const match = checkbox.getAttribute('onchange').match(/'([^']+)'/);
+            if (match) {
+                const modId = match[1];
+                checkbox.checked = completedModules.includes(modId);
+                card.classList.toggle('completed', checkbox.checked);
+            }
+        }
     });
 }
 
-// TIMER
-let timerInterval;
-let timeLeft = 1200; // 20 min default
+// --- TIMER DI MEDITAZIONE ---
+let timerInterval = null;
+let timeLeft = 15 * 60; // 15 min default
 
-function setTimer(minutes) {
-    clearInterval(timerInterval);
+function setDuration(minutes) {
+    timerReset();
     timeLeft = minutes * 60;
     updateTimerDisplay();
-    document.getElementById('startBtn').style.display = 'inline-block';
-    document.getElementById('pauseBtn').style.display = 'none';
-}
-
-function setCustomTimer() {
-    const min = prompt("Inserisci i minuti:", "20");
-    if (min) setTimer(parseInt(min));
+    
+    // Attiva lo stato visivo sul bottone
+    document.querySelectorAll('.dur-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.innerText) === minutes);
+    });
 }
 
 function updateTimerDisplay() {
     const min = Math.floor(timeLeft / 60);
     const sec = timeLeft % 60;
-    document.getElementById('timerDisplay').innerText = 
-        `${min}:${sec.toString().padStart(2, '0')}`;
+    const display = document.getElementById('timerTime');
+    if (display) display.innerText = `${min}:${sec.toString().padStart(2, '0')}`;
 }
 
-function startTimer() {
-    document.getElementById('startBtn').style.display = 'none';
-    document.getElementById('pauseBtn').style.display = 'inline-block';
+function timerToggle() {
+    const btn = document.getElementById('timerStartBtn');
     
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerDisplay();
-        if (timeLeft <= 0) {
-            clearInterval(timerInterval);
-            alert("Sessione conclusa. Dedica i meriti!");
-            resetTimer();
-        }
-    }, 1000);
+    if (timerInterval) {
+        // Pausa
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (btn) btn.innerText = "▶ Inizia";
+    } else {
+        // Avvio
+        if (btn) btn.innerText = "⏸ Pausa";
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                if (btn) btn.innerText = "▶ Inizia";
+                alert("Sessione conclusa. Dedica i meriti di questa pratica a tutti gli esseri senzienti.");
+                timeLeft = 15 * 60; // Reset a default
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
 }
 
-function pauseTimer() {
+function timerReset() {
     clearInterval(timerInterval);
-    document.getElementById('startBtn').style.display = 'inline-block';
-    document.getElementById('pauseBtn').style.display = 'none';
+    timerInterval = null;
+    const btn = document.getElementById('timerStartBtn');
+    if (btn) btn.innerText = "▶ Inizia";
+    timeLeft = 15 * 60;
+    updateTimerDisplay();
 }
 
-function resetTimer() {
-    pauseTimer();
-    setTimer(20);
+// --- GESTIONE TAB MUSICA ---
+function showMusicTab(type) {
+    document.getElementById('spotifyContent').style.display = type === 'spotify' ? 'block' : 'none';
+    document.getElementById('youtubeContent').style.display = type === 'youtube' ? 'block' : 'none';
+    
+    document.querySelectorAll('.music-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.innerText.toLowerCase().includes(type));
+    });
 }
 
-// INITIALIZE
+// --- INIZIALIZZAZIONE ---
 document.addEventListener('DOMContentLoaded', () => {
     updateUI();
     updateTimerDisplay();
+    console.log("🕉️ Sentiero del Dharma pronto.");
 });
