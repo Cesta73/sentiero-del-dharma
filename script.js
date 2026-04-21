@@ -30,19 +30,20 @@ function toggleModule(id) {
 }
 
 function updateUI() {
-    const total = 2; // Numero moduli attuali
+    const modules = document.querySelectorAll('.module-card');
+    const total = modules.length || 1;
     const percent = Math.round((completedModules.length / total) * 100) || 0;
     
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
     if (progressFill) progressFill.style.width = percent + '%';
-    if (progressText) progressText.innerText = percent + '%';
+    if (progressText) progressText.innerText = percent + '% Completato';
     
-    document.querySelectorAll('.module-card').forEach(card => {
+    modules.forEach(card => {
         const modId = card.dataset.module;
         const isDone = completedModules.includes(modId);
         card.classList.toggle('completed', isDone);
-        const cb = card.querySelector('input');
+        const cb = card.querySelector('input[type="checkbox"]');
         if (cb) cb.checked = isDone;
     });
 }
@@ -58,7 +59,7 @@ function setDuration(m) {
     timeLeft = initialTime;
     updateTimerDisplay();
     
-    document.querySelectorAll('.btn-sm').forEach(b => {
+    document.querySelectorAll('.dur-btn').forEach(b => {
         b.classList.toggle('active', b.innerText.includes(m));
     });
 }
@@ -69,10 +70,11 @@ function updateTimerDisplay() {
     const display = document.getElementById('timerTime');
     if (display) display.innerText = `${min}:${sec.toString().padStart(2, '0')}`;
     
-    // SVG Progress
+    // SVG Progress: Circumference is 565 (2 * PI * 90)
     const circle = document.getElementById('timerProgress');
     if (circle) {
-        const offset = 565 - (565 * (timeLeft / initialTime));
+        const progress = timeLeft / initialTime;
+        const offset = 565 * (1 - progress);
         circle.style.strokeDashoffset = offset;
     }
 }
@@ -84,7 +86,7 @@ function timerToggle() {
         timerInterval = null;
         if (btn) btn.innerText = "Riprendi";
     } else {
-        if (btn) btn.innerText = "Pausa";Update logic to support new UI, SVG timer progress, and responsive navigation
+        if (btn) btn.innerText = "Pausa";
         timerInterval = setInterval(() => {
             timeLeft--;
             updateTimerDisplay();
@@ -109,12 +111,14 @@ function timerReset() {
 
 // --- INIZIALIZZAZIONE ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Setup SVG circumference (2 * PI * R) = 2 * 3.14 * 90 = 565
+    // Initial UI update
+    updateUI();
+    
+    // Setup SVG circumference
     const circle = document.getElementById('timerProgress');
     if (circle) {
         circle.style.strokeDasharray = 565;
         circle.style.strokeDashoffset = 0;
     }
-    updateUI();
     updateTimerDisplay();
 });
