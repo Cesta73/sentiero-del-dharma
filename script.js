@@ -1,81 +1,65 @@
 /**
- * IL SENTIERO DEL DHARMA - LOGICA APPLICATIVA
+ * IL SENTIERO DEL DHARMA - LOGICA FUNZIONALE
  */
 
 // --- NAVIGAZIONE ---
-function showSection(sectionId) {
-    // Nascondi tutte le sezioni
+function showSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    
-    // Mostra la sezione target
-    const target = document.getElementById(sectionId);
+    const target = document.getElementById(id);
     if (target) target.classList.add('active');
     
-    // Aggiorna i bottoni della navbar
     document.querySelectorAll('.nav-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.sec === sectionId);
+        b.classList.toggle('active', b.dataset.sec === id);
     });
     
-    // Cambia attributo nel body per CSS dinamico
-    document.body.dataset.section = sectionId;
+    document.body.dataset.section = id;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // --- GESTIONE PROGRESSI ---
 let completedModules = JSON.parse(localStorage.getItem('dharmaProgress')) || [];
 
-function toggleModule(modId) {
-    if (completedModules.includes(modId)) {
-        completedModules = completedModules.filter(id => id !== modId);
+function toggleModule(id) {
+    if (completedModules.includes(id)) {
+        completedModules = completedModules.filter(m => m !== id);
     } else {
-        completedModules.push(modId);
+        completedModules.push(id);
     }
-    saveProgress();
+    localStorage.setItem('dharmaProgress', JSON.stringify(completedModules));
     updateUI();
 }
 
-function saveProgress() {
-    localStorage.setItem('dharmaProgress', JSON.stringify(completedModules));
-}
-
 function updateUI() {
-    // Calcola percentuale (basata sui 2 moduli attuali)
-    const totalModules = 2; 
-    const percent = Math.round((completedModules.length / totalModules) * 100) || 0;
+    const total = 2; // Numero moduli attuali
+    const percent = Math.round((completedModules.length / total) * 100) || 0;
     
-    // Aggiorna barre e testi progresso
-    const progressText = document.getElementById('progressText');
     const progressFill = document.getElementById('progressFill');
-    if (progressText) progressText.innerText = percent + '%';
+    const progressText = document.getElementById('progressText');
     if (progressFill) progressFill.style.width = percent + '%';
+    if (progressText) progressText.innerText = percent + '%';
     
-    // Aggiorna lo stato visivo delle card
     document.querySelectorAll('.module-card').forEach(card => {
-        const checkbox = card.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-            // Estrae l'ID dal richiamo onchange (es. '1.1')
-            const match = checkbox.getAttribute('onchange').match(/'([^']+)'/);
-            if (match) {
-                const modId = match[1];
-                checkbox.checked = completedModules.includes(modId);
-                card.classList.toggle('completed', checkbox.checked);
-            }
-        }
+        const modId = card.dataset.module;
+        const isDone = completedModules.includes(modId);
+        card.classList.toggle('completed', isDone);
+        const cb = card.querySelector('input');
+        if (cb) cb.checked = isDone;
     });
 }
 
-// --- TIMER DI MEDITAZIONE ---
+// --- TIMER MEDITAZIONE ---
 let timerInterval = null;
-let timeLeft = 15 * 60; // 15 min default
+let initialTime = 900; // 15 min default
+let timeLeft = 900;
 
-function setDuration(minutes) {
+function setDuration(m) {
     timerReset();
-    timeLeft = minutes * 60;
+    initialTime = m * 60;
+    timeLeft = initialTime;
     updateTimerDisplay();
     
-    // Attiva lo stato visivo sul bottone
-    document.querySelectorAll('.dur-btn').forEach(btn => {
-        btn.classList.toggle('active', parseInt(btn.innerText) === minutes);
+    document.querySelectorAll('.btn-sm').forEach(b => {
+        b.classList.toggle('active', b.innerText.includes(m));
     });
 }
 
@@ -84,30 +68,31 @@ function updateTimerDisplay() {
     const sec = timeLeft % 60;
     const display = document.getElementById('timerTime');
     if (display) display.innerText = `${min}:${sec.toString().padStart(2, '0')}`;
+    
+    // SVG Progress
+    const circle = document.getElementById('timerProgress');
+    if (circle) {
+        const offset = 565 - (565 * (timeLeft / initialTime));
+        circle.style.strokeDashoffset = offset;
+    }
 }
 
 function timerToggle() {
     const btn = document.getElementById('timerStartBtn');
-    
     if (timerInterval) {
-        // Pausa
         clearInterval(timerInterval);
         timerInterval = null;
-        if (btn) btn.innerText = "▶ Inizia";
+        if (btn) btn.innerText = "Riprendi";
     } else {
-        // Avvio
-        if (btn) btn.innerText = "⏸ Pausa";
+        if (btn) btn.innerText = "Pausa";Update logic to support new UI, SVG timer progress, and responsive navigation
         timerInterval = setInterval(() => {
             timeLeft--;
             updateTimerDisplay();
-            
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 timerInterval = null;
-                if (btn) btn.innerText = "▶ Inizia";
-                alert("Sessione conclusa. Dedica i meriti di questa pratica a tutti gli esseri senzienti.");
-                timeLeft = 15 * 60; // Reset a default
-                updateTimerDisplay();
+                alert("Sessione conclusa. Dedica i meriti.");
+                timerReset();
             }
         }, 1000);
     }
@@ -116,25 +101,20 @@ function timerToggle() {
 function timerReset() {
     clearInterval(timerInterval);
     timerInterval = null;
+    timeLeft = initialTime;
     const btn = document.getElementById('timerStartBtn');
-    if (btn) btn.innerText = "▶ Inizia";
-    timeLeft = 15 * 60;
+    if (btn) btn.innerText = "Inizia";
     updateTimerDisplay();
-}
-
-// --- GESTIONE TAB MUSICA ---
-function showMusicTab(type) {
-    document.getElementById('spotifyContent').style.display = type === 'spotify' ? 'block' : 'none';
-    document.getElementById('youtubeContent').style.display = type === 'youtube' ? 'block' : 'none';
-    
-    document.querySelectorAll('.music-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.innerText.toLowerCase().includes(type));
-    });
 }
 
 // --- INIZIALIZZAZIONE ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Setup SVG circumference (2 * PI * R) = 2 * 3.14 * 90 = 565
+    const circle = document.getElementById('timerProgress');
+    if (circle) {
+        circle.style.strokeDasharray = 565;
+        circle.style.strokeDashoffset = 0;
+    }
     updateUI();
     updateTimerDisplay();
-    console.log("🕉️ Sentiero del Dharma pronto.");
 });
