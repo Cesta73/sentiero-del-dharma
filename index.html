@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Il Sentiero del Dharma</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body data-section="home">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">&#9784; Il Sentiero del Dharma</div>
+    <div class="nav-links">
+      <button class="nav-btn active" onclick="showSection('home')" data-sec="home">&#127968; Home</button>
+      <button class="nav-btn" onclick="showSection('corso')" data-sec="corso">&#128218; Corso</button>
+      <button class="nav-btn" onclick="showSection('meditazione')" data-sec="meditazione">&#129496; Meditazione</button>
+      <button class="nav-btn" onclick="showSection('mantra')" data-sec="mantra">&#127897; Mantra</button>
+    </div>
+    <div class="nav-progress" id="navProgress">
+      <span id="progressText">0%</span>
+      <div class="progress-bar-mini"><div class="progress-fill-mini" id="progressFill"></div></div>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <section id="home" class="section active">
+    <div class="hero">
+      <div class="hero-mandala">&#9784;</div>
+      <h1 class="hero-title">Il Sentiero del Dharma</h1>
+      <p class="hero-sub">Corso completo di Buddismo Tibetano<br><em>Nella tradizione Gelug - Lama Michel Rinpoche</em></p>
+      <div class="hero-buttons">
+        <button class="btn-primary" onclick="showSection('corso')">Inizia il Corso</button>
+        <button class="btn-secondary" onclick="showSection('meditazione')">Medita Ora</button>
+      </div>
+    </div>
+    <div class="home-cards">
+      <div class="home-card" onclick="showSection('corso')">
+        <div class="card-icon">&#128218;</div>
+        <h3>Corso Strutturato</h3>
+        <p>4 livelli dal principiante all'avanzato. Tieni traccia dei tuoi progressi.</p>
+        <div class="card-stat" id="homeProgress">0 moduli completati</div>
+      </div>
+      <div class="home-card" onclick="showSection('meditazione')">
+        <div class="card-icon">&#129496;</div>
+        <h3>Meditazione Guidata</h3>
+        <p>Sessioni da 15, 20, 30 minuti con le istruzioni di Lama Michel Rinpoche.</p>
+        <div class="card-stat">Timer + Musica integrati</div>
+      </div>
+      <div class="home-card" onclick="showSection('mantra')">
+        <div class="card-icon">&#127897;</div>
+        <h3>Mantra Sacri</h3>
+        <p>I mantra fondamentali con pronuncia, significato e pratica guidata.</p>
+        <div class="card-stat">6 mantra essenziali</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORSO -->
+  <section id="corso" class="section">
+    <div class="section-header">
+      <h2>&#128218; Corso di Buddismo Tibetano</h2>
+      <p>Segui il percorso a tuo ritmo. I tuoi progressi vengono salvati automaticamente.</p>
+      <div class="overall-progress">
+        <span id="corsoProgressText">Progresso: 0 / 0 moduli</span>
+        <div class="progress-bar"><div class="progress-fill" id="corsoProgressFill"></div></div>
+      </div>
+    </div>
+    <div class="levels-nav" id="levelsNav"></div>
+    <div class="modules-container" id="modulesContainer"></div>
+  </section>
+
+  <!-- MEDITAZIONE -->
+  <section id="meditazione" class="section">
+    <div class="section-header">
+      <h2>&#129496; Sessione di Meditazione</h2>
+      <p>Segui le istruzioni di Lama Michel Rinpoche per meditare correttamente.</p>
+    </div>
+
+    <!-- POSTURA -->
+    <div class="med-block">
+      <h3 class="med-block-title">&#127775; Le Otto Posture di Vairocana</h3>
+      <p class="med-source"><em>Istruzioni dirette di Lama Michel Rinpoche</em></p>
+      <div class="posture-grid" id="postureGrid"></div>
+    </div>
+
+    <!-- TIMER -->
+    <div class="med-block">
+      <h3 class="med-block-title">&#9200; Timer di Meditazione</h3>
+      <div class="timer-section">
+        <div class="duration-selector">
+          <button class="dur-btn active" onclick="setDuration(15)" data-min="15">15 min</button>
+          <button class="dur-btn" onclick="setDuration(20)" data-min="20">20 min</button>
+          <button class="dur-btn" onclick="setDuration(30)" data-min="30">30 min</button>
+          <button class="dur-btn" onclick="setCustomDuration()" data-min="0">Personalizzato</button>
+        </div>
+        <div class="custom-duration" id="customDuration" style="display:none">
+          <input type="number" id="customMinutes" min="1" max="180" value="25" placeholder="Minuti">
+          <button onclick="applyCustomDuration()">Imposta</button>
+        </div>
+        <div class="timer-display">
+          <div class="timer-circle">
+            <svg class="timer-svg" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="90" class="timer-track"/>
+              <circle cx="100" cy="100" r="90" class="timer-progress" id="timerProgress"/>
+            </svg>
+            <div class="timer-text">
+              <div class="timer-time" id="timerTime">15:00</div>
+              <div class="timer-label" id="timerLabel">Pronto</div>
+            </div>
+          </div>
+        </div>
+        <div class="timer-controls">
+          <button class="btn-timer" id="timerStartBtn" onclick="timerToggle()">&#9654; Inizia</button>
+          <button class="btn-timer-sec" onclick="timerReset()">&#9632; Reset</button>
+        </div>
+        <div class="session-phase" id="sessionPhase"></div>
+      </div>
+    </div>
+
+    <!-- MUSICA -->
+    <div class="med-block">
+      <h3 class="med-block-title">&#127925; Musica per Meditazione</h3>
+      <div class="music-tabs">
+        <button class="music-tab active" onclick="showMusicTab('spotify')">&#9835; Spotify</button>
+        <button class="music-tab" onclick="showMusicTab('youtube')">&#9654; YouTube</button>
+      </div>
+      <div class="music-content" id="spotifyContent">
+        <div class="spotify-grid" id="spotifyGrid"></div>
+      </div>
+      <div class="music-content" id="youtubeContent" style="display:none">
+        <div class="youtube-grid" id="youtubeGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANTRA -->
+  <section id="mantra" class="section">
+    <div class="section-header">
+      <h2>&#127897; I Mantra Fondamentali</h2>
+      <p>I mantra essenziali del Buddismo Tibetano con pronuncia, significato e pratica.</p>
+    </div>
+    <div class="mantra-grid" id="mantraGrid"></div>
+  </section>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" id="modal" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- CAMPANA AUDIO -->
+  <audio id="bellSound" preload="auto">
+    <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
