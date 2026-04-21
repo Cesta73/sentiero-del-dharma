@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Il Sentiero del Dharma</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    >
+    //fonts.googleapis.com">
+    //fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body data-section="home">
     <nav class="navbar">
@@ -27,7 +27,7 @@
         <div class="hero">
             <div class="hero-mandala">☸</div>
             <h1 class="hero-title">Il Sentiero del Dharma</h1>
-            <p class="hero-sub">Corso completo di Buddismo Tibetano<br><em>Nella tradizione Gelug - Lama Michel Rinpoche</em></p>
+            <p class="hero-sub">Percorso completo di Buddismo Tibetano<br><em>Tradizione Gelug - Lama Michel Rinpoche</em></p>
             <div class="hero-buttons">
                 <button class="btn-primary" onclick="showSection('corso')">Inizia il Corso</button>
                 <button class="btn-secondary" onclick="showSection('meditazione')">Medita Ora</button>
@@ -37,35 +37,36 @@
 
     <section id="corso" class="section">
         <div class="section-header">
-            <h2>📚 Corso di Buddismo Tibetano</h2>
-            <p>I tuoi progressi vengono salvati automaticamente.</p>
+            <h2>📚 Percorso di Studio</h2>
+            <p>I tuoi progressi vengono salvati automaticamente nel browser.</p>
         </div>
         <div class="modules-container">
             <article class="module-card">
                 <div class="module-header">
-                    <h3>Modulo 1.1: Chi era il Buddha?</h3>
-                    <label class="checkbox-container">
+                    <h3>1.1 Chi era il Buddha?</h3>
+                    abel class="checkbox-container">
                         <input type="checkbox" onchange="toggleModule('1.1')">
                         <span class="checkmark"></span>
                     </label>
                 </div>
-                <p>La storia di Siddharta Gautama e i concetti base.</p>
+                <p>La storia di Siddharta e i concetti base: Samsara, Dharma, Sangha.</p>
                 <div class="module-actions">
-                    <a href="modulo1_1.html" class="btn-read">Leggi Contenuto</a>
+                    <a href="modulo1_1.html" class="btn-read">📖 Leggi Contenuto</a>
                     <a href="https://www.youtube.com/results?search_query=Lama+Michel+storia+del+Buddha" target="_blank" class="btn-video">▶ Video</a>
                 </div>
             </article>
+
             <article class="module-card">
                 <div class="module-header">
-                    <h3>Modulo 1.2: Quattro Nobili Verità</h3>
-                    <label class="checkbox-container">
+                    <h3>1.2 Quattro Nobili Verità</h3>
+                    abel class="checkbox-container">
                         <input type="checkbox" onchange="toggleModule('1.2')">
                         <span class="checkmark"></span>
                     </label>
                 </div>
-                <p>Il fondamento del sentiero: Dukkha, Samudaya, Nirodha, Magga.</p>
+                <p>Dukkha, Samudaya, Nirodha, Magga. Il fondamento del sentiero.</p>
                 <div class="module-actions">
-                    <a href="modulo1_2.html" class="btn-read">Leggi Contenuto</a>
+                    <a href="modulo1_2.html" class="btn-read">📖 Leggi Contenuto</a>
                     <a href="https://www.youtube.com/watch?v=XyQEtjAtnfQ" target="_blank" class="btn-video">▶ Video</a>
                 </div>
             </article>
@@ -75,49 +76,56 @@
     <section id="meditazione" class="section">
         <div class="section-header">
             <h2>🧘 Sessione di Meditazione</h2>
+            <p>Istruzioni dirette di Lama Michel Rinpoche.</p>
         </div>
         <div class="med-block">
-            <h3>🌟 Postura (Lama Michel)</h3>
-            <ul class="posture-list">
-                <li><strong>Gambe:</strong> Loto, mezzo loto o comoda.</li>
-                <li><strong>Schiena:</strong> Dritta (filo verso l'alto).</li>
-                <li><strong>Mani:</strong> Destra su sinistra, pollici uniti.</li>
-                <li><strong>Testa:</strong> Leggermente avanti, lingua sul palato.</li>
-            </ul>
-        </div>
-        <div class="med-block">
-            <h3>⏰ Timer</h3>
-            <div class="timer-display" id="timerTime">20:00</div>
-            <div class="timer-controls">
-                <button class="dur-btn" onclick="setDuration(15)">15m</button>
-                <button class="dur-btn" onclick="setDuration(20)">20m</button>
-                <button class="dur-btn" onclick="setDuration(30)">30m</button>
-            </div>
-            <div class="timer-actions">
-                <button class="btn-timer" onclick="timerToggle()">START/PAUSA</button>
-                <button class="btn-timer-sec" onclick="timerReset()">RESET</button>
+            <h3>🌟 Le Otto Posture di Vairocana</h3>
+            <div class="posture-grid">
+                <div class="posture-item"><strong>1. Gambe:</strong> Loto o Mezzo Loto.</div>
+                <div class="posture-item"><strong>2. Schiena:</strong> Dritta come una freccia.</div>
+                <div class="posture-item"><strong>3. Spalle:</strong> Aperte come ali.</div>
+                <div class="posture-item"><strong>4. Collo:</strong> Inclinato (mento verso la gola).</div>
+                <div class="posture-item"><strong>5. Mani:</strong> Nel grembo (equanimità).</div>
+                <div class="posture-item"><strong>6. Lingua:</strong> Sul palato.</div>
+                <div class="posture-item"><strong>7. Occhi:</strong> Socchiusi verso il basso.</div>
+                <div class="posture-item"><strong>8. Respiro:</strong> Naturale dalle narici.</div>
             </div>
         </div>
         <div class="med-block">
-            <h3>🎵 Musica</h3>
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWZqd5YOSuC0v?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <h3>⏰ Timer di Meditazione</h3>
+            <div class="timer-section">
+                <div class="duration-selector">
+                    <button class="dur-btn active" onclick="setDuration(15)">15 min</button>
+                    <button class="dur-btn" onclick="setDuration(20)">20 min</button>
+                    <button class="dur-btn" onclick="setDuration(30)">30 min</button>
+                </div>
+                <div class="timer-display">
+                    <div class="timer-time" id="timerTime">15:00</div>
+                </div>
+                <div class="timer-controls">
+                    <button class="btn-timer" onclick="timerToggle()">▶ Inizia / Pausa</button>
+                    <button class="btn-timer-sec" onclick="timerReset()">■ Reset</button>
+                </div>
+            </div>
+        </div>
+        <div class="med-block">
+            <h3>🎵 Atmosfere Sonore</h3>
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DWZqd5YOSuC0v?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </div>
     </section>
 
     <section id="mantra" class="section">
-        <div class="section-header">
-            <h2>🎙 Mantra</h2>
-        </div>
+        <div class="section-header"><h2>🎙 Mantra Sacri</h2></div>
         <div class="mantra-grid">
             <div class="mantra-card">
                 <h4>Om Mani Padme Hum</h4>
                 <p class="mantra-text">ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ</p>
-                <p>Compassione universale.</p>
+                <p>Mantra della Compassione (Chenrezig).</p>
             </div>
             <div class="mantra-card">
                 <h4>Om Tare Tuttare Ture Soha</h4>
                 <p class="mantra-text">ཨོཾ་ཏཱ་རེ་ཏུ་ཏྟཱ་རེ་ཏུ་རེ་སྭཱ་ཧཱ།</p>
-                <p>Liberazione e protezione.</p>
+                <p>Mantra di Tara Verde (Liberazione).</p>
             </div>
         </div>
     </section>
