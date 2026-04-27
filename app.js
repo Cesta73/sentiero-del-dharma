@@ -331,10 +331,10 @@ function generaListaSuoni() {
     card.className = 'suono-card'
     card.innerHTML = `
       <div class="suono-info">
-        <h4>${s.nome}</h4>
-        <p>${s.desc}</p>
-      </div>
-      <span class="suono-icona">${s.icona}</span>
+    <h4>${s.titolo}</h4>
+    <p>${s.descrizione}</p>
+  </div>
+  <span class="suono-icona">${s.emoji}</span>
     `
     card.onclick = () => apriPlayer(s.url)
     lista.appendChild(card)
