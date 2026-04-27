@@ -65,25 +65,25 @@ const suoni = [
     titolo: "Campana Tibetana",
     descrizione: "Vibrazione pura per entrare in meditazione",
     emoji: "🔔",
-    url: "https://youtu.be/EMzmq9iglJs"
+    url: "https://youtu.be/EMzmq9iglJs?si=jSDHT1g_Y25djU4V"
   },
   {
     titolo: "Suoni della Natura",
     descrizione: "Acqua, vento e foresta per calmare la mente",
     emoji: "🌿",
-    url: "https://youtu.be/mUp9Wbw5aQ4"
+    url: "https://youtu.be/mUp9Wbw5aQ4?si=Rz4bpjy_2hwptNW3"
   },
   {
     titolo: "432 Hz - Frequenza Naturale",
     descrizione: "Armonia con la vibrazione dell'universo",
     emoji: "🎵",
-    url: "https://youtu.be/JwKApreKItc"
+    url: "https://youtu.be/JwKApreKItc?si=d8py8f_d47arwqIZ"
   },
   {
     titolo: "Frequenza di Dio - 963 Hz",
     descrizione: "Connessione con la coscienza universale",
     emoji: "✨",
-    url: "https://youtu.be/6xVj6mfSRR0"
+    url: "https://youtu.be/6xVj6mfSRR0?si=pI3AnKp3vHo_llmX"
   }
 ];
 
