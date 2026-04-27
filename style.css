@@ -80,6 +80,7 @@ html, body {
 
 /* ===== CARD MENU ===== */
 .card-menu {
+  color: #f5e6d0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
