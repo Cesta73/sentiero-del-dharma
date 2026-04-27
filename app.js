@@ -62,36 +62,30 @@ const mantra = [
 // ===== SUONI YOUTUBE =====
 const suoni = [
   {
-    nome: 'Campana Tibetana',
-    desc: '1 ora · Meditazione profonda',
-    icona: '🔔',
-    url: 'https://www.youtube.com/embed/1ZYbU82GVz4?autoplay=1'
+    titolo: "Campana Tibetana",
+    descrizione: "Vibrazione pura per entrare in meditazione",
+    emoji: "🔔",
+    url: "https://youtu.be/EMzmq9iglJs"
   },
   {
-    nome: 'Canto Om',
-    desc: '3 ore · Vibrazione pura',
-    icona: '🎶',
-    url: 'https://www.youtube.com/embed/l1PpEAVK4P0?autoplay=1'
+    titolo: "Suoni della Natura",
+    descrizione: "Acqua, vento e foresta per calmare la mente",
+    emoji: "🌿",
+    url: "https://youtu.be/mUp9Wbw5aQ4"
   },
   {
-    nome: 'Natura e Acqua',
-    desc: '2 ore · Suoni naturali',
-    icona: '🌿',
-    url: 'https://www.youtube.com/embed/eKFTSSKCzWA?autoplay=1'
+    titolo: "432 Hz - Frequenza Naturale",
+    descrizione: "Armonia con la vibrazione dell'universo",
+    emoji: "🎵",
+    url: "https://youtu.be/JwKApreKItc"
   },
   {
-    nome: 'Frequenza 432Hz',
-    desc: '1 ora · Armonia cosmica',
-    icona: '✨',
-    url: 'https://www.youtube.com/embed/kx3KUZnUoUQ?autoplay=1'
-  },
-  {
-    nome: 'Canti Gregoriani',
-    desc: '1 ora · Silenzio sacro',
-    icona: '🕍',
-    url: 'https://www.youtube.com/embed/7FMsp_QaO2o?autoplay=1'
+    titolo: "Frequenza di Dio - 963 Hz",
+    descrizione: "Connessione con la coscienza universale",
+    emoji: "✨",
+    url: "https://youtu.be/6xVj6mfSRR0"
   }
-]
+];
 
 // ===== TIMER =====
 let timerInterval = null
