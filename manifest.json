@@ -1,0 +1,19 @@
+{
+  "name": "NgalSo - Pratica Tibetana",
+  "short_name": "NgalSo",
+  "description": "Meditazione guidata con respirazione maestro e mantra a tempo",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FCF9F2",
+  "theme_color": "#2a5c6e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
