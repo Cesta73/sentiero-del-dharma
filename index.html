@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2a5c6e">
+  <title>Il Sentiero del Dharma · Respirazione Maestro</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #FCF9F2;
+      color: #2C3E4E;
+      padding: 18px 16px 32px;
+      min-height: 100vh;
+    }
+    .app { max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; }
+    .logo { display: flex; align-items: center; gap: 12px; color: #1F4E6E; font-weight: 700; font-size: 22px; }
+    .streak-badge { background: white; padding: 8px 16px; border-radius: 60px; font-size: 14px; font-weight: 600; color: #3A7B5C; box-shadow: 0 5px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 8px; }
+    .main-nav { display: flex; gap: 8px; background: white; padding: 6px; border-radius: 60px; box-shadow: 0 5px 12px rgba(0,0,0,0.05); }
+    .nav-btn { flex: 1; background: transparent; border: none; padding: 12px 8px; border-radius: 50px; font-size: 15px; font-weight: 600; color: #6B7B8B; cursor: pointer; }
+    .nav-btn.active { background: #3A7B5C; color: white; }
+    .card { background: white; border-radius: 28px; padding: 20px; box-shadow: 0 5px 12px rgba(0,0,0,0.05); border: 1px solid #E6DED3; }
+    .preset-row { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 12px; }
+    .preset-btn, .emergency-btn { background: white; border: 1px solid #E6DED3; border-radius: 60px; padding: 12px; font-weight: 600; color: #1F4E6E; cursor: pointer; transition: 0.2s; }
+    .timer-circle { position: relative; width: 200px; margin: 0 auto 20px; aspect-ratio: 1; }
+    .timer-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+    .timer-ring-bg { fill: none; stroke: #E9E0D4; stroke-width: 10; }
+    .timer-ring-progress { fill: none; stroke: #3A7B5C; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 596.9; stroke-dashoffset: 596.9; transition: stroke-dashoffset 0.2s linear; }
+    .timer-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+    .timer-display { font-size: 42px; font-weight: 700; font-variant-numeric: tabular-nums; color: #1F4E6E; }
+    .timer-controls { display: flex; gap: 12px; margin-top: 8px; }
+    .btn-primary, .btn-secondary { flex: 1; padding: 12px; border-radius: 60px; font-weight: 600; border: none; cursor: pointer; }
+    .btn-primary { background: #3A7B5C; color: white; }
+    .btn-secondary { background: #F4F0E6; border: 1px solid #E6DED3; color: #2C3E4E; }
+    .live-guide { background: #F4F0E6; border-radius: 20px; padding: 20px; border-left: 6px solid #E9B35F; }
+    .guide-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: #3A7B5C; margin-bottom: 12px; }
+    .live-guide h3 { font-size: 20px; margin-bottom: 8px; }
+    .live-guide p { color: #6B7B8B; margin-bottom: 20px; line-height: 1.4; }
+    .sacred-display { background: white; border-radius: 24px; padding: 20px; margin: 16px 0 12px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02), 0 5px 12px rgba(0,0,0,0.03); }
+    .mantra-sacred-text { font-size: 24px; font-weight: 600; font-family: monospace; background: #FCF8F0; padding: 24px 16px; border-radius: 32px; text-align: center; word-break: break-word; line-height: 1.6; margin-bottom: 20px; border: 1px solid #E6DED3; }
+    .word-highlight { display: inline-block; background: #3A7B5C; color: white; padding: 2px 8px; border-radius: 30px; margin: 0 1px; transition: 0.05s; }
+    .breath-in .word-highlight { background: #4A7C59; box-shadow: 0 0 0 2px rgba(74,124,89,0.3); }
+    .breath-hold .word-highlight { background: #D4AF37; color: #2C3E4E; box-shadow: 0 0 0 2px rgba(212,175,55,0.2); }
+    .breath-out .word-highlight { background: #A15843; box-shadow: 0 0 0 2px rgba(161,88,67,0.2); }
+    .reps-counter { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 600; }
+    .breath-sync { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E6DED3; }
+    .breath-arrow { font-size: 32px; display: inline-block; transition: transform 0.2s; color: #3A7B5C; }
+    .breath-text { font-size: 14px; font-weight: 500; color: #6B7B8B; }
+    .info-btn { background: none; border: none; font-size: 18px; cursor: pointer; margin-left: 8px; color: #E9B35F; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s; }
+    .modal.show { visibility: visible; opacity: 1; }
+    .modal-content { background: white; max-width: 90%; max-height: 80vh; overflow-y: auto; padding: 24px; border-radius: 32px; }
+    .close-modal { margin-top: 20px; background: #3A7B5C; color: white; border: none; padding: 8px 24px; border-radius: 40px; cursor: pointer; }
+    .settings-row { display: flex; gap: 12px; align-items: center; }
+    select { flex: 2; padding: 12px; border-radius: 60px; border: 1px solid #E6DED3; background: white; }
+    .small-btn { padding: 8px 20px; border-radius: 60px; background: white; border: 1px solid #E6DED3; cursor: pointer; }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1F4E6E; color: white; padding: 10px 22px; border-radius: 60px; opacity: 0; transition: 0.2s; pointer-events: none; z-index: 1100; font-size: 14px; }
+    .toast.show { opacity: 1; }
+    .footer { text-align: center; font-size: 11px; color: #6B7B8B; margin-top: 12px; display: flex; justify-content: center; gap: 16px; }
+    .footer a { color: #3A7B5C; text-decoration: none; cursor: pointer; }
+    .tab-panel { display: none; flex-direction: column; gap: 18px; }
+    .tab-panel.active { display: flex; }
+    .mood-buttons, .mood-after-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 12px; }
+    .mood-btn, .mood-after-btn { background: #F4F0E6; border: 1px solid #E6DED3; border-radius: 40px; padding: 10px 16px; font-size: 14px; font-weight: 500; color: #2C3E4E; cursor: pointer; }
+    .mood-btn.active, .mood-after-btn.active { background: #3A7B5C; color: white; border-color: #3A7B5C; }
+    .journal-textarea { width: 100%; border-radius: 20px; padding: 12px; border: 1px solid #E6DED3; font-family: inherit; margin: 8px 0; resize: vertical; }
+    .session-item { padding: 12px; background: #F4F0E6; border-radius: 20px; margin-bottom: 8px; }
+    .session-date { font-weight: 600; color: #1F4E6E; }
+    .precept-item { padding: 8px 0; border-bottom: 1px solid #E6DED3; }
+    .moon-milestone { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #E6DED3; }
+    .cookie-banner {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 500px;
+      background: #1F4E6E;
+      color: white;
+      border-radius: 28px;
+      padding: 14px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 1200;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      font-size: 13px;
+    }
+    .cookie-banner button {
+      background: #E9B35F;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 40px;
+      color: #2C3E4E;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="logo">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" width="38" height="38">
+        <circle cx="24" cy="24" r="19"/>
+        <path d="M15 27c2.8 5.2 15.2 5.2 18 0M18 25h12M20 21h8M24 13v8" stroke-linecap="round"/>
+      </svg>
+      <span>Il Sentiero del Dharma</span>
+    </div>
+    <div class="streak-badge"><span>🔥</span><span id="streakCount">0</span><span>gg</span></div>
+  </header>
+  <nav class="main-nav">
+    <button class="nav-btn active" data-tab="practice">🧘 Pratica</button>
+    <button class="nav-btn" data-tab="moon">🌙 Luna</button>
+    <button class="nav-btn" data-tab="journal">📓 Diario</button>
+  </nav>
+
+  <!-- TAB PRATICA -->
+  <div id="tab-practice" class="tab-panel active">
+    <div class="preset-row">
+      <button class="preset-btn" data-preset="morningFull">🌅 Mattina · Tradizionale</button>
+      <button class="preset-btn" data-preset="morningRapid">⚡ Mattina · Veloce</button>
+      <button class="preset-btn" data-preset="eveningFull">🌙 Sera · Tradizionale</button>
+      <button class="preset-btn" data-preset="eveningRapid">⚡ Sera · Veloce</button>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom: 12px;">⚡ Pratiche di ricentro</h3>
+      <div style="display: flex; gap: 12px;">
+        <button class="emergency-btn" data-emergency="1min">🌀 1 min – Scarico rapido</button>
+        <button class="emergency-btn" data-emergency="2min">❤️ 2 min – Ritorno al cuore</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="timer-circle">
+        <svg class="timer-ring" viewBox="0 0 240 240">
+          <circle class="timer-ring-bg" cx="120" cy="120" r="95"></circle>
+          <circle class="timer-ring-progress" id="timerRingProgress" cx="120" cy="120" r="95"></circle>
+        </svg>
+        <div class="timer-center">
+          <div class="timer-display" id="timerDisplay">00:00</div>
+          <span id="timerPhaseLabel">Pratica</span>
+        </div>
+      </div>
+      <div class="timer-controls">
+        <button id="startTimerBtn" class="btn-primary">▶ Avvia</button>
+        <button id="pauseTimerBtn" class="btn-secondary">⏸ Pausa</button>
+        <button id="resetTimerBtn" class="btn-secondary">⟳ Reset</button>
+      </div>
+    </div>
+    <div class="live-guide" id="liveGuide">
+      <div class="guide-header"><span id="stepCounter">Passo 1/4</span><span id="stepTimer">0:00</span></div>
+      <h3 id="stepTitle">Rifugio</h3>
+      <p id="stepText"></p>
+      <div id="sacredArea" style="display: none;">
+        <div class="sacred-display">
+          <div class="reps-counter">
+            <span>🔁 <span id="currentRep">0</span>/<span id="targetReps">0</span></span>
+            <button id="mantraInfoBtn" class="info-btn" title="Pronuncia e significato">ℹ️</button>
+          </div>
+          <div id="sacredMantraText" class="mantra-sacred-text"></div>
+          <div class="breath-sync">
+            <span>🌬️</span>
+            <span id="breathArrowIcon" class="breath-arrow">↓</span>
+            <span id="breathStateLabel">Inspiro</span>
+            <span id="breathInstruction" style="font-size: 13px; max-width: 180px; text-align: left;"></span>
+          </div>
+        </div>
+      </div>
+      <div class="next-preview" id="nextPreview"></div>
+    </div>
+    <div class="settings-row">
+      <select id="bellSelect">
+        <option value="both">🔔 Campana inizio/fine</option>
+        <option value="end">🔕 Solo fine</option>
+        <option value="silent">🔇 Silenzioso</option>
+      </select>
+      <button id="testBellBtn" class="small-btn">Prova campana</button>
+    </div>
+  </div>
+
+  <!-- TAB LUNA -->
+  <div id="tab-moon" class="tab-panel">
+    <div class="card" style="background: linear-gradient(125deg, #1F4E6E, #2a5c6e); color: white; display: flex; gap: 16px; align-items: center;">
+      <div id="moonIcon" style="font-size: 52px;">🌕</div>
+      <div><h3 id="moonPhaseName">Luna piena</h3><p id="moonAdvice"></p></div>
+    </div>
+    <div class="card" id="moonPracticeCard"></div>
+    <div class="card" id="preceptsCard" style="display: none;"><h3>📜 8 precetti Mahayana</h3><div id="preceptsList"></div></div>
+    <div class="card"><h4>📅 Prossimi giorni favorevoli</h4><div id="moonMilestones"></div></div>
+  </div>
+
+  <!-- TAB DIARIO -->
+  <div id="tab-journal" class="tab-panel">
+    <div class="card">
+      <label>Prima della pratica</label>
+      <div class="mood-buttons">
+        <button class="mood-btn" data-mood="calmo">😌 Calmo</button>
+        <button class="mood-btn" data-mood="stanco">😴 Stanco</button>
+        <button class="mood-btn" data-mood="agitato">😤 Agitato</button>
+        <button class="mood-btn" data-mood="pesante">🪨 Pesante</button>
+      </div>
+      <input type="hidden" id="moodBefore" value="calmo">
+
+      <label>Dopo la pratica</label>
+      <div class="mood-after-buttons">
+        <button class="mood-after-btn" data-after="leggero">🕊️ Leggero</button>
+        <button class="mood-after-btn" data-after="centrato">🎯 Centrato</button>
+        <button class="mood-after-btn" data-after="calmo">😌 Calmo</button>
+        <button class="mood-after-btn" data-after="uguale">➖ Uguale</button>
+      </div>
+      <input type="hidden" id="moodAfter" value="leggero">
+
+      <textarea id="journalNote" class="journal-textarea" rows="3" placeholder="Sensazioni, pensieri, note..."></textarea>
+      <div class="button-group">
+        <button id="saveJournalBtn" class="btn-primary">💾 Salva e completa pratica</button>
+        <button id="deleteAllDataBtn" class="btn-secondary" style="background:#F4F0E6;">🗑️ Cancella i miei dati</button>
+      </div>
+    </div>
+    <div class="card">
+      <h4>📋 Storico pratiche</h4>
+      <div id="sessionHistory"></div>
+      <button id="exportDataBtn" class="small-btn" style="margin-top: 12px;">📤 Esporta i miei dati (JSON)</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>Il Sentiero del Dharma · v1.2</span>
+    <a id="privacyPolicyLink">📜 Privacy Policy</a>
+  </footer>
+</div>
+
+<!-- Cookie Banner -->
+<div id="cookieBanner" class="cookie-banner" style="display: none;">
+  <span>🍪 Questo sito utilizza il localStorage del browser per salvare le tue preferenze e il tuo diario. Nessun dato viene inviato a server esterni. Continuando a usare l'app acconsenti a questa archiviazione locale.</span>
+  <button id="acceptCookiesBtn">Ho capito</button>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="modal" class="modal"><div class="modal-content"><div id="modalMessage"></div><button class="close-modal">Chiudi</button></div></div>
+
+<script>
+  // --------------------------------------------------------------
+  // DATI DEI MANTRA (stessi di prima)
+  // --------------------------------------------------------------
+  const MANTRA_DB = {
+    "OM AH HUNG": {
+      pattern: { inhale: 4, hold: 2, exhale: 4 },
+      instructions: {
+        inhale: "Inspira luce bianca dalla sommità del capo (OM). Purifica il corpo.",
+        hold: "Trattieni, luce rossa alla gola (AH). Purifica la parola.",
+        exhale: "Espira luce blu dal cuore (HUNG). Purifica la mente."
+      },
+      pronunciation: "om ah hung",
+      meaning: "Purifica corpo, parola e mente. Unisce i tre aspetti dell'essere."
+    },
+    "OM MANI PEME HUNG": {
+      pattern: { inhale: 4, hold: 1, exhale: 5 },
+      instructions: {
+        inhale: "Inspira compassione, visualizza luce bianca.",
+        hold: "Senti il cuore aprirsi.",
+        exhale: "Espira amore verso tutti gli esseri."
+      },
+      pronunciation: "om ma-ni pe-me hung",
+      meaning: "Compassione universale."
+    },
+    "NAMO GURU BYE NAMO BUDDHAYA NAMO DHARMAYA NAMO SANGHAYA": {
+      pattern: { inhale: 5, hold: 1, exhale: 6 },
+      instructions: {
+        inhale: "Inspira fiducia nei Tre Gioielli.",
+        hold: "Riconosci la tua intenzione.",
+        exhale: "Espira devozione e rifugio."
+      },
+      pronunciation: "nah-moh goo-roo bye, nah-moh boo-dah-yah...",
+      meaning: "Rifugio nel Guru, Buddha, Dharma, Sangha."
+    },
+    "OM BODHICITTA HUNG": {
+      pattern: { inhale: 4, hold: 2, exhale: 4 },
+      instructions: {
+        inhale: "Inspira determinazione a risvegliarti per tutti.",
+        hold: "Senti il cuore espandersi.",
+        exhale: "Espira la promessa di aiutare gli esseri."
+      },
+      pronunciation: "om bo-dhi-chit-ta hung",
+      meaning: "Risveglia la mente compassionevole."
+    },
+    "EH YAM RAM LAM BAM HO SHUDDHE SHUDDHE SOHA": {
+      pattern: { inhale: 4, hold: 1, exhale: 5 },
+      instructions: {
+        inhale: "Inspira energia pura dei 5 elementi.",
+        hold: "Armonizza spazio, aria, fuoco, terra, acqua.",
+        exhale: "Espira impurità, tutto diventa chiaro."
+      },
+      pronunciation: "e yam ram lam bam ho sciud-de sciud-de so-ha",
+      meaning: "Purificazione dei cinque elementi."
+    }
+  };
+  const DEFAULT_PATTERN = { inhale: 3, hold: 1, exhale: 3 };
+  const DEFAULT_INSTR = { inhale: "Inspira profondamente.", hold: "Trattieni con calma.", exhale: "Espira lentamente." };
+
+  // --------------------------------------------------------------
+  // PRATICHE
+  // --------------------------------------------------------------
+  const PRACTICE_TEMPLATES = {
+    morningFull: { name: "Mattina Tradizionale", steps: [
+      { title: "Rifugio", text: "Prendi rifugio nei Tre Gioielli. Recita tre volte: NAMO GURU BYE, NAMO BUDDHAYA, NAMO DHARMAYA, NAMO SANGHAYA.", mantra: "NAMO GURU BYE NAMO BUDDHAYA NAMO DHARMAYA NAMO SANGHAYA", reps: 3 },
+      { title: "Bodhicitta", text: "Risveglia la mente compassionevole. Recita OM BODHICITTA HUNG, sentendo il cuore espandersi verso tutti gli esseri.", mantra: "OM BODHICITTA HUNG", reps: 3 },
+      { title: "Mantra Cuore", text: "Apri il cuore alla compassione universale. Recita OM MANI PEME HUNG ventuno volte.", mantra: "OM MANI PEME HUNG", reps: 21 },
+      { title: "Dedica", text: "Dedica il merito di questa pratica: 'Per il bene di tutti gli esseri, che la mia pratica porti pace, chiarezza e guarigione. Possano diminuire confusione, paura e sofferenza. Possano aumentare compassione, salute e gioia, per me e per tutti.'", mantra: "", reps: 0 }
+    ] },
+    morningRapid: { name: "Mattina Veloce", steps: [
+      { title: "Rifugio", mantra: "NAMO GURU BYE NAMO BUDDHAYA NAMO DHARMAYA NAMO SANGHAYA", reps: 1 },
+      { title: "Bodhicitta", mantra: "OM BODHICITTA HUNG", reps: 1 },
+      { title: "Mantra Cuore", mantra: "OM MANI PEME HUNG", reps: 7 },
+      { title: "Dedica", text: "Possa ogni mio gesto oggi essere benefico per tutti gli esseri.", mantra: "", reps: 0 }
+    ] },
+    eveningFull: { name: "Sera Tradizionale", steps: [
+      { title: "Scarico", text: "Lascia andare le tensioni del giorno. Con OM AH HUNG, purifica corpo, parola e mente.", mantra: "OM AH HUNG", reps: 7 },
+      { title: "Purificazione elementi", text: "EH YAM RAM LAM BAM / HO SHUDDHE SHUDDHE SOHA. Armonizza i cinque elementi.", mantra: "EH YAM RAM LAM BAM HO SHUDDHE SHUDDHE SOHA", reps: 5 },
+      { title: "Mantra Cuore", text: "Compassione che guarisce la giornata.", mantra: "OM MANI PEME HUNG", reps: 21 },
+      { title: "Dedica", text: "Che questa notte sia riposante e che tutti gli esseri possano trovare pace.", mantra: "", reps: 0 }
+    ] },
+    eveningRapid: { name: "Sera Veloce", steps: [
+      { title: "Scarico", mantra: "OM AH HUNG", reps: 3 },
+      { title: "Purificazione elementi", mantra: "EH YAM RAM LAM BAM HO SHUDDHE SHUDDHE SOHA", reps: 2 },
+      { title: "Mantra Cuore", mantra: "OM MANI PEME HUNG", reps: 7 },
+      { title: "Dedica", text: "Possa io e tutti gli esseri riposare in pace.", mantra: "", reps: 0 }
+    ] },
+    emergency1: { name: "Scarico 1 min", steps: [
+      { title: "Respiro OM AH HUNG", text: "Tre respiri profondi. Inspira OM, trattieni AH, espira HUNG.", mantra: "OM AH HUNG", reps: 3 },
+      { title: "Dedica", text: "Che questa pausa porti chiarezza e centratura.", mantra: "", reps: 0 }
+    ] },
+    emergency2: { name: "Ritorno cuore 2 min", steps: [
+      { title: "Rifugio", text: "Prendi rifugio in un solo respiro.", mantra: "NAMO GURU BYE NAMO BUDDHAYA NAMO DHARMAYA NAMO SANGHAYA", reps: 1 },
+      { title: "Mantra Cuore", text: "Sette ripetizioni per riaprire il cuore.", mantra: "OM MANI PEME HUNG", reps: 7 },
+      { title: "Dedica", text: "Che questa breve pratica mi riporti alla presenza amorevole.", mantra: "", reps: 0 }
+    ] }
+  };
+
+  // --------------------------------------------------------------
+  // UTILITY
+  // --------------------------------------------------------------
+  const storage = {
+    get(k, d=null) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e) { return d; } },
+    set(k,v) { localStorage.setItem(k, JSON.stringify(v)); },
+    remove(k) { localStorage.removeItem(k); },
+    clear() { localStorage.clear(); }
+  };
+  function toast(msg) { let t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
+  function playBell(kind) { try { let a = new Audio(`audio/${kind === 'start' ? 'bell-start' : 'bell-interval'}.mp3`); a.volume = 0.4; a.play().catch(()=>{}); } catch(e){} }
+
+  function getStepDuration(step) {
+    if (!step.mantra || step.reps === 0) return 0;
+    const p = MANTRA_DB[step.mantra]?.pattern || DEFAULT_PATTERN;
+    return step.reps * (p.inhale + p.hold + p.exhale);
+  }
+
+  // --------------------------------------------------------------
+  // STATO GLOBALE
+  // --------------------------------------------------------------
+  let currentPractice = null;
+  let currentStepIndex = 0;
+  let timerRemaining = 0;
+  let timerTotal = 0;
+  let timerRunning = false;
+  let timerIntervalId = null;
+
+  let currentMantraObj = null;
+  let currentRep = 0;
+  let targetReps = 0;
+  let words = [];
+  let wordIndex = 0;
+  let cycleDuration = 0;
+  let updateInterval = null;
+
+  // --------------------------------------------------------------
+  // FUNZIONI MANTRA E RESPIRO
+  // --------------------------------------------------------------
+  function getPhaseAtTime(seconds) {
+    const p = currentMantraObj.pattern;
+    const t = seconds % cycleDuration;
+    if (t < p.inhale) return { phase: 'inhale', instruction: currentMantraObj.instructions?.inhale || DEFAULT_INSTR.inhale };
+    if (t < p.inhale + p.hold) return { phase: 'hold', instruction: currentMantraObj.instructions?.hold || DEFAULT_INSTR.hold };
+    if (t < p.inhale + p.hold + p.exhale) return { phase: 'exhale', instruction: currentMantraObj.instructions?.exhale || DEFAULT_INSTR.exhale };
+    return { phase: 'hold', instruction: "Pausa" };
+  }
+
+  function updateBreathUI(phase, instruction) {
+    const arrow = document.getElementById('breathArrowIcon');
+    const label = document.getElementById('breathStateLabel');
+    const instrSpan = document.getElementById('breathInstruction');
+    const sacredDiv = document.getElementById('sacredMantraText')?.parentElement?.parentElement;
+    if (!arrow) return;
+    arrow.style.transform = phase === 'inhale' ? 'translateY(0px)' : (phase === 'exhale' ? 'translateY(-12px)' : 'translateY(-6px)');
+    arrow.innerHTML = phase === 'inhale' ? '↓' : (phase === 'exhale' ? '↑' : '◌');
+    label.innerText = phase === 'inhale' ? 'Inspiro' : (phase === 'exhale' ? 'Espiro' : 'Trattieni');
+    if (sacredDiv) {
+      sacredDiv.classList.remove('breath-in', 'breath-hold', 'breath-out');
+      sacredDiv.classList.add(phase === 'inhale' ? 'breath-in' : (phase === 'exhale' ? 'breath-out' : 'breath-hold'));
+    }
+    instrSpan.innerText = instruction;
+  }
+
+  function renderMantraText() {
+    const container = document.getElementById('sacredMantraText');
+    if (!container) return;
+    let html = '';
+    for (let i = 0; i < words.length; i++) {
+      if (i === wordIndex) html += `<span class="word-highlight">${words[i]}</span> `;
+      else html += `${words[i]} `;
+    }
+    container.innerHTML = html.trim();
+  }
+
+  function updateMantraAndBreath() {
+    if (!currentMantraObj || !timerRunning) return;
+    const elapsedTotal = timerTotal - timerRemaining;
+    const completedReps = Math.floor(elapsedTotal / cycleDuration);
+    if (completedReps !== currentRep) {
+      currentRep = completedReps;
+      document.getElementById('currentRep').innerText = currentRep;
+      wordIndex = 0;
+      renderMantraText();
+      if (currentRep >= targetReps) {
+        if (updateInterval) clearInterval(updateInterval);
+        updateInterval = null;
+        document.getElementById('sacredArea').style.display = 'none';
+        nextStep();
+        return;
+      }
+    }
+    const repElapsed = elapsedTotal - currentRep * cycleDuration;
+    const wordDuration = cycleDuration / words.length;
+    let newWordIndex = Math.floor(repElapsed / wordDuration);
+    if (newWordIndex >= words.length) newWordIndex = words.length - 1;
+    if (newWordIndex !== wordIndex) {
+      wordIndex = newWordIndex;
+      renderMantraText();
+    }
+    const { phase, instruction } = getPhaseAtTime(repElapsed);
+    updateBreathUI(phase, instruction);
+  }
+
+  function startMantraDisplay(step) {
+    if (!step.mantra || step.reps === 0) {
+      document.getElementById('sacredArea').style.display = 'none';
+      return;
+    }
+    currentMantraObj = MANTRA_DB[step.mantra] || { pattern: DEFAULT_PATTERN, instructions: DEFAULT_INSTR, pronunciation: "", meaning: "" };
+    targetReps = step.reps;
+    currentRep = 0;
+    words = step.mantra.split(/\s+/).filter(w => w.length > 0);
+    wordIndex = 0;
+    const p = currentMantraObj.pattern;
+    cycleDuration = p.inhale + p.hold + p.exhale;
+    document.getElementById('targetReps').innerText = targetReps;
+    document.getElementById('currentRep').innerText = "0";
+    document.getElementById('sacredArea').style.display = 'block';
+    renderMantraText();
+    if (updateInterval) clearInterval(updateInterval);
+    updateInterval = setInterval(() => {
+      if (timerRunning) updateMantraAndBreath();
+    }, 50);
+  }
+
+  function stopMantraDisplay() {
+    if (updateInterval) clearInterval(updateInterval);
+    updateInterval = null;
+    document.getElementById('sacredArea').style.display = 'none';
+  }
+
+  function loadStep(index) {
+    const step = currentPractice.steps[index];
+    document.getElementById('stepCounter').innerText = `Passo ${index+1}/${currentPractice.steps.length}`;
+    document.getElementById('stepTitle').innerText = step.title;
+    document.getElementById('stepText').innerText = step.text;
+    startMantraDisplay(step);
+    const next = currentPractice.steps[index+1];
+    document.getElementById('nextPreview').innerHTML = next ? `⏭️ Prossimo: ${next.title}` : '🎉 Ultimo passo – dedica e chiusura';
+  }
+
+  function nextStep() {
+    if (currentStepIndex + 1 < currentPractice.steps.length) {
+      currentStepIndex++;
+      loadStep(currentStepIndex);
+    } else {
+      completePractice();
+    }
+  }
+
+  function completePractice() {
+    pauseTimer();
+    playBell('start');
+    let sessions = storage.get('sentiero_sessions', {});
+    sessions[new Date().toISOString().split('T')[0]] = { completed: true, name: currentPractice.name };
+    storage.set('sentiero_sessions', sessions);
+    updateStreak(true);
+    toast('✨ Pratica completata! ✨');
+    resetTimer();
+  }
+
+  function timerTick() {
+    if (timerRemaining <= 0) {
+      completePractice();
+      return;
+    }
+    timerRemaining--;
+    updateTimerDisplay();
+  }
+
+  function startTimer() {
+    if (timerRunning) return;
+    timerRunning = true;
+    if (document.getElementById('bellSelect').value !== 'silent') playBell('start');
+    timerIntervalId = setInterval(timerTick, 1000);
+  }
+
+  function pauseTimer() {
+    timerRunning = false;
+    if (timerIntervalId) clearInterval(timerIntervalId);
+    timerIntervalId = null;
+  }
+
+  function resetTimer() {
+    pauseTimer();
+    timerRemaining = timerTotal;
+    currentStepIndex = 0;
+    loadStep(0);
+    updateTimerDisplay();
+  }
+
+  function updateTimerDisplay() {
+    let mins = Math.floor(timerRemaining / 60);
+    let secs = timerRemaining % 60;
+    document.getElementById('timerDisplay').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    let progress = (timerTotal - timerRemaining) / timerTotal;
+    let circum = 2 * Math.PI * 95;
+    let offset = circum * (1 - progress);
+    document.getElementById('timerRingProgress').style.strokeDashoffset = offset;
+  }
+
+  function setPracticeFromTemplate(templateKey) {
+    const tmpl = PRACTICE_TEMPLATES[templateKey];
+    if (!tmpl) return;
+    const steps = tmpl.steps.map(s => ({ ...s }));
+    const totalSec = steps.reduce((sum, step) => sum + getStepDuration(step), 0);
+    currentPractice = { name: tmpl.name, steps: steps };
+    timerTotal = totalSec;
+    timerRemaining = totalSec;
+    currentStepIndex = 0;
+    updateTimerDisplay();
+    loadStep(0);
+    pauseTimer();
+    document.getElementById('timerPhaseLabel').innerText = `${currentPractice.name} · ${Math.floor(totalSec/60)}min`;
+    storage.set('sentiero_last_practice', { template: templateKey });
+  }
+
+  // --------------------------------------------------------------
+  // STREAK, LUNA, DIARIO
+  // --------------------------------------------------------------
+  function updateStreak() {
+    let s = storage.get('sentiero_sessions', {});
+    let streak = 0;
+    let d = new Date();
+    while (true) {
+      let k = d.toISOString().split('T')[0];
+      if (s[k]?.completed) streak++;
+      else break;
+      d.setDate(d.getDate() - 1);
+    }
+    document.getElementById('streakCount').innerText = streak;
+  }
+
+  function getMoonAge() {
+    const synodicMonth = 29.530588853;
+    const knownNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
+    const days = (Date.now() - knownNewMoon) / 86400000;
+    return ((days % synodicMonth) + synodicMonth) % synodicMonth;
+  }
+
+  function getMoonPhase(age) {
+    if (age < 1.2 || age >= 28.33) return "new";
+    if (age < 5.54) return "waxing";
+    if (age >= 6.8 && age < 8.2) return "first";
+    if (age < 9.23) return "waxing";
+    if (age < 12.92) return "gibbousWax";
+    if (age >= 13.6 && age < 16) return "full";
+    if (age < 20.30) return "gibbousWane";
+    if (age >= 21 && age < 23) return "last";
+    return "waning";
+  }
+
+  function getMoonPhaseName(phaseKey) {
+    const names = { new: "🌑 Luna nuova", first: "🌓 Primo quarto", full: "🌕 Luna piena", last: "🌗 Ultimo quarto", default: "🌒 Luna crescente" };
+    return names[phaseKey] || names.default;
+  }
+
+  function renderMoon() {
+    const age = getMoonAge();
+    const phaseKey = getMoonPhase(age);
+    const phaseName = getMoonPhaseName(phaseKey);
+    const isFavorable = (phaseKey === "new" || phaseKey === "full");
+    document.getElementById('moonIcon').innerHTML = phaseKey === 'new' ? '🌑' : (phaseKey === 'full' ? '🌕' : (phaseKey === 'first' ? '🌓' : (phaseKey === 'last' ? '🌗' : '🌒')));
+    document.getElementById('moonPhaseName').innerHTML = phaseName;
+    document.getElementById('moonAdvice').innerHTML = isFavorable ? '✨ Giorno favorevole per gli 8 precetti Mahayana' : '📿 Pratica base';
+
+    const practiceCard = document.getElementById('moonPracticeCard');
+    practiceCard.innerHTML = `<button class="btn-primary" id="moonStartBtn">🧘 Avvia pratica tradizionale</button>`;
+    const moonStartBtn = document.getElementById('moonStartBtn');
+    if (moonStartBtn) moonStartBtn.addEventListener('click', () => { setPracticeFromTemplate('morningFull'); document.querySelector('.nav-btn[data-tab="practice"]').click(); toast('Pratica tradizionale caricata'); });
+
+    const preceptsCard = document.getElementById('preceptsCard');
+    if (isFavorable) {
+      preceptsCard.style.display = 'block';
+      const preceptsList = ["Non uccidere nessun essere vivente","Non rubare","Non avere attività sessuale","Non mentire","Non assumere intossicanti","Non mangiare dopo mezzogiorno","Non sedersi su letti alti o lussuosi","Non usare ornamenti, profumi o musica"];
+      document.getElementById('preceptsList').innerHTML = preceptsList.map(l => `<div class="precept-item">${l}</div>`).join('');
+    } else preceptsCard.style.display = 'none';
+
+    const synodicMonth = 29.530588853;
+    const targets = [
+      { key: 'new', name: '🌑 Luna nuova', daysTo: (28.33 - age + synodicMonth) % synodicMonth },
+      { key: 'first', name: '🌓 Primo quarto', daysTo: (7.38 - age + synodicMonth) % synodicMonth },
+      { key: 'full', name: '🌕 Luna piena', daysTo: (14.76 - age + synodicMonth) % synodicMonth },
+      { key: 'last', name: '🌗 Ultimo quarto', daysTo: (22.14 - age + synodicMonth) % synodicMonth }
+    ];
+    const upcoming = targets.filter(t => t.daysTo > 0.5 && t.daysTo < 28).sort((a,b) => a.daysTo - b.daysTo).slice(0,3);
+    document.getElementById('moonMilestones').innerHTML = upcoming.map(m => `<div class="moon-milestone"><div><strong>${m.name}</strong><div class="milestone-practice">${m.key === 'new' || m.key === 'full' ? 'Pratica dei precetti' : 'Pratica base'}</div></div><span>tra ${Math.round(m.daysTo)} giorni</span></div>`).join('') || '<div>Nessun evento imminente</div>';
+  }
+
+  function renderJournal() {
+    const entries = storage.get('sentiero_journal', []);
+    const container = document.getElementById('sessionHistory');
+    if (!entries.length) { container.innerHTML = '<div class="session-item">Nessuna nota salvata</div>'; return; }
+    container.innerHTML = entries.slice(0,10).map(e => `<div class="session-item"><div class="session-date">${new Date(e.date).toLocaleDateString('it-IT')}</div><div>${e.moodBefore} → ${e.moodAfter}</div><div style="font-size:13px; color:#6B7B8B; margin-top:4px;">${e.note || ''}</div></div>`).join('');
+  }
+
+  function saveJournal() {
+    const before = document.getElementById('moodBefore').value;
+    const after = document.getElementById('moodAfter').value;
+    const note = document.getElementById('journalNote').value;
+    const journal = storage.get('sentiero_journal', []);
+    journal.unshift({ date: new Date().toISOString(), moodBefore: before, moodAfter: after, note, practice: currentPractice?.name || '' });
+    storage.set('sentiero_journal', journal.slice(0,100));
+    renderJournal();
+    toast('Diario salvato');
+    document.getElementById('journalNote').value = '';
+  }
+
+  function deleteAllUserData() {
+    if (confirm("⚠️ ATTENZIONE: Cancellerai PERMANENTEMENTE tutto il tuo storico pratiche, il diario e lo streak. Questa azione è irreversibile. Procedere?")) {
+      // Rimuovi solo le chiavi relative all'app (evita di cancellare accidentalmente altre cose)
+      storage.remove('sentiero_sessions');
+      storage.remove('sentiero_journal');
+      storage.remove('sentiero_last_practice');
+      storage.remove('cookieBannerAccepted');
+      // Non cancelliamo l'intero localStorage, solo le nostre chiavi.
+      // Resetta l'app alla pratica default
+      setPracticeFromTemplate('morningFull');
+      renderJournal();
+      updateStreak();
+      renderMoon();
+      toast('✅ Tutti i tuoi dati sono stati cancellati.');
+    }
+  }
+
+  function exportData() {
+    const data = { sessions: storage.get('sentiero_sessions', {}), journal: storage.get('sentiero_journal', []), exportDate: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sentiero_dharma_backup_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Dati esportati');
+  }
+
+  function showMantraInfo() {
+    const obj = currentMantraObj || { pronunciation: "", meaning: "" };
+    document.getElementById('modalMessage').innerHTML = `<strong>Pronuncia:</strong><br>${obj.pronunciation}<br><br><strong>Significato:</strong><br>${obj.meaning}`;
+    document.getElementById('modal').classList.add('show');
+  }
+
+  function showPrivacyPolicy() {
+    const policyText = `
+      <h2>Informativa sulla Privacy</h2>
+      <p><strong>Titolare del trattamento:</strong> Gianluca Cestarollo (sviluppatore indipendente).</p>
+      <p><strong>Dati raccolti:</strong> Questa applicazione non raccoglie né invia alcun dato personale a server esterni. Tutti i dati (diario, storico pratiche, preferenze) vengono salvati esclusivamente nel localStorage del tuo browser sul tuo dispositivo.</p>
+      <p><strong>Finalità:</strong> I dati sono usati solo per fornire le funzionalità dell'app (salvare il diario, contare lo streak, ricordare l'ultima pratica).</p>
+      <p><strong>Base giuridica:</strong> Il trattamento avviene solo per l'esecuzione del servizio richiesto (art. 6 par. 1 lett. b GDPR).</p>
+      <p><strong>Diritti dell'utente:</strong> Puoi esportare o cancellare i tuoi dati in qualsiasi momento tramite i pulsanti nella scheda "Diario".</p>
+      <p><strong>Cookies:</strong> Non utilizziamo cookie di tracciamento. Il localStorage non è un cookie, ma una memoria locale del browser.</p>
+      <p><strong>Contatti:</strong> Per qualsiasi richiesta, scrivi a [inserisci qui la tua email].</p>
+      <p><em>Data ultimo aggiornamento: 21 maggio 2026</em></p>
+    `;
+    document.getElementById('modalMessage').innerHTML = policyText;
+    document.getElementById('modal').classList.add('show');
+  }
+
+  // Cookie banner
+  function initCookieBanner() {
+    const banner = document.getElementById('cookieBanner');
+    const accepted = storage.get('cookieBannerAccepted', false);
+    if (!accepted) banner.style.display = 'flex';
+    document.getElementById('acceptCookiesBtn').onclick = () => {
+      storage.set('cookieBannerAccepted', true);
+      banner.style.display = 'none';
+    };
+  }
+
+  // --------------------------------------------------------------
+  // INIT
+  // --------------------------------------------------------------
+  function init() {
+    const last = storage.get('sentiero_last_practice', { template: 'morningFull' });
+    setPracticeFromTemplate(last.template);
+    document.querySelectorAll('.preset-btn').forEach(btn => btn.addEventListener('click', () => setPracticeFromTemplate(btn.dataset.preset)));
+    document.querySelectorAll('[data-emergency]').forEach(btn => btn.addEventListener('click', () => setPracticeFromTemplate(btn.dataset.emergency === '1min' ? 'emergency1' : 'emergency2')));
+    document.getElementById('startTimerBtn').onclick = startTimer;
+    document.getElementById('pauseTimerBtn').onclick = pauseTimer;
+    document.getElementById('resetTimerBtn').onclick = resetTimer;
+    document.getElementById('testBellBtn').onclick = () => playBell('start');
+    document.getElementById('saveJournalBtn').onclick = saveJournal;
+    document.getElementById('exportDataBtn').onclick = exportData;
+    document.getElementById('deleteAllDataBtn').onclick = deleteAllUserData;
+    document.getElementById('mantraInfoBtn')?.addEventListener('click', showMantraInfo);
+    document.getElementById('privacyPolicyLink').onclick = showPrivacyPolicy;
+
+    // Mood buttons
+    document.querySelectorAll('.mood-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('moodBefore').value = btn.dataset.mood;
+        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+    document.querySelectorAll('.mood-after-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('moodAfter').value = btn.dataset.after;
+        document.querySelectorAll('.mood-after-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+    document.querySelector('.mood-btn[data-mood="calmo"]')?.classList.add('active');
+    document.querySelector('.mood-after-btn[data-after="leggero"]')?.classList.add('active');
+
+    // Tab navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (tab === 'moon') renderMoon();
+        if (tab === 'journal') renderJournal();
+      });
+    });
+
+    renderMoon();
+    renderJournal();
+    updateStreak();
+    initCookieBanner();
+    toast('🙏 Il Sentiero del Dharma – La tua pratica rispetta la tua privacy');
+    document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', () => document.getElementById('modal').classList.remove('show')));
+  }
+  init();
+</script>
+</body>
+</html>
